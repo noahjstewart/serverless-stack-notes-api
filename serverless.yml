@@ -20,14 +20,55 @@ provider:
   # the following line. Also, make sure to not
   # commit your .env.
   #
-  #environment:
+  environment:
+    tableName: notes
   #  SAMPLE_ENV_VAR: ${env:SAMPLE_ENV_VAR}
 
+  # 'iamRoleStatements' defines the permission policy for the Lambda function.
+  # In this case Lambda functions are granted with permissions to access DynamoDB.
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:DescribeTable
+      Resource: "arn:aws:dynamodb:us-east-2:*:*"  # us-east-2 has tables
+
 functions:
-  # name of function
-  hello:
-    handler: handler.hello
+  # Defines an HTTP API endpoint that calls the main function in create.js
+  # - path: url path is /notes
+  # - method: POST request
+  create:
+    handler: functions/create.main
     events:
       - http:
-          path: hello
+          path: notes
+          method: post
+  get:
+    handler: functions/get.main
+    events:
+      - http:
+          path: notes/{id}
           method: get
+  list:
+    handler: functions/list.main
+    events:
+      - http:
+          path: notes
+          method: get
+  update:
+    handler: functions/update.main
+    events:
+      - http:
+          path: notes/{id}
+          method: put
+  delete:
+    handler: functions/delete.main
+    events:
+      - http:
+          path: notes/{id}
+          method: delete
