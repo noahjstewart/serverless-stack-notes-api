@@ -1,21 +1,22 @@
-import stripePackage from "stripe";
-import handler from "../libs/handler-lib";
-import { calculateCost } from "../libs/billing-lib";
+import stripePackage from 'stripe';
+import handler from '../libs/handler-lib';
+import { calculateCost } from '../libs/billing-lib';
 
+// eslint-disable-next-line no-unused-vars
 export const main = handler(async (event, context) => {
-    const { storage, source } = JSON.parse(event.body);
-    const amount = calculateCost(storage);
-    const description = "Scratch charge";
+	const { storage, source } = JSON.parse(event.body);
+	const amount = calculateCost(storage);
+	const description = 'Scratch charge';
 
-    // Load secret key from the env vars
-    const stripe = stripePackage(process.env.stripeSecretKey);
+	// Load secret key from the env vars
+	const stripe = stripePackage(process.env.stripeSecretKey);
 
-    await stripe.charges.create({
-        source,
-        amount,
-        description,
-        currency: "usd",
-    });
+	await stripe.charges.create({
+		source,
+		amount,
+		description,
+		currency: 'usd',
+	});
 
-    return { status: true };
+	return { status: true };
 });
